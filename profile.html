@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>embenabu1|Nguyễn Ngân Hà</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      text-align: center;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    /* Video nền */
+    #bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    /* Canvas Sakura */
+    #sakura-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    /* Lớp overlay */
+    .overlay {
+      background: rgba(0, 0, 0, 0.15);
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: none; /* ẩn trước */
+      display: flex;                /* căn giữa */
+      justify-content: center;      /* ngang */
+      align-items: center;          /* dọc */
+    }
+    .center-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+    .avatar {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      border: 4px solid #ffffff00;
+      box-shadow: 0 0 25px #ffffff;
+      object-fit: cover;
+	  animation: spin 20s linear infinite; /* Xoay chậm */
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+    }
+    .username {font-size: 28px; margin-top: 14px;}
+    .nickname {font-size: 22px; color: #8efcff;}
+    .friend-card {
+      margin: 16px auto;
+      background: rgb(241 241 241 / 5%);
+      padding: 10px 20px;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 0 8px rgb(0 0 0 / 5%);
+    }
+    .friend-card img {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+    }
+    .socials {
+      margin-top: 16px;
+      display: flex; justify-content: center;
+      gap: 20px; flex-wrap: wrap;
+    }
+    .socials a {
+      color: #ffffff; font-size: 30px;
+      text-shadow: 0 0 6px #ff5307;
+      transition: 0.2s;
+    }
+    .socials a:hover {transform: scale(1.1); color: #ffffff;}
+    .views {margin-top: 14px; font-size: 14px; color: #aefeff;}
+
+    /* Music player trong suốt */
+    .music-player {
+      width: 850px;
+      background: transparent;
+      color: #ff5307;
+      font-family: "Poppins", sans-serif;
+      margin: 20px auto;
+      font-size: 18px;
+    }
+    .music-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+	   margin-left: -70px;
+    }
+    .icon-box {
+      width: 100px; height: 100px;
+      border-radius: 12px;
+      background: rgb(0 0 0 / 5%);
+      display: flex; justify-content: center; align-items: center;
+      box-shadow: 0 0 12px #ffffff00;
+      color: #ffffff;
+      font-size: 30px;
+	  margin-top: 30px; 
+    }
+    .song-details { flex: 1; }
+    .song-title {
+      font-size: 20px;
+      margin-bottom: 8px;
+      color: #ffffff;
+      text-shadow: 0 0 6px #ff5307;
+    }
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #seek-bar {
+      flex: 1;
+      accent-color: #ffffff	;
+      height: 6px;
+    }
+    #current-time, #duration {
+      font-size: 14px;
+      color: #ffffff;
+    }
+    .progress-row button {
+      background: none;
+      border: none;
+      color:#ffffff;
+      font-size: 22px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .progress-row button:hover:enabled {
+      transform: scale(1.2);
+      color: #fff;
+    }
+    button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* Start Screen (Màn hình khóa) */
+    #start-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #start-screen h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 12px #ff5307;
+    }
+    #start-btn {
+      padding: 14px 28px;
+      font-size: 20px;
+      border: none;
+      border-radius: 12px;
+      background: #ff5307;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ff5307;
+      transition: 0.25s;
+    }
+    #start-btn:hover {
+      background: #00ccaa;
+      transform: scale(1.05);
+      color: #fff;
+    }
+	.username {
+  font-size: 36px;
+  margin-top: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #00ffe5;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #ff5307, #eaf5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientFlow 5s ease infinite;
+}
+
+.nickname {
+  font-size: 20px;
+  margin-top: 8px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: #cccccc;
+  opacity: 0.85;
+  font-style: italic;
+}
+
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+  </style>
+</head>
+<body>
+  <!-- Video nền -->
+  <video id="bg-video" autoplay loop muted playsinline>
+    <source src="https://r2.guns.lol/635e5804-79cd-4396-b45a-8d24eeb3f949.mp4" type="video/mp4">
+  </video>
+
+  <!-- Sakura -->
+  <canvas id="sakura-canvas"></canvas>
+
+  <!-- Start Screen -->
+  <div id="start-screen">
+    <h1>Welcome to Ngân Hà Profile</h1>
+    <button id="start-btn">Click Here</button>
+  </div>
+
+  <!-- Nội dung -->
+  <div class="overlay" id="main-content">
+    <div class="center-container">
+      <img src="https://data4.ikara.co/data/minio/ikara-data/user/996445002111320/thumbnail/1723471927713.jpg" alt="avatar" class="avatar" />
+      <div class="username">embenabu1</div>
+      <div class="nickname">Nguyễn Ngân Hà</div>
+
+      <div class="friend-card">
+        <img src="data:image/jpeg;base64,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" alt="friend">
+        <div>
+          <strong>_lepsobad 💜</strong><br>
+          <span style="font-size: 13px; color: #ccc;">Status: 2 hours ago</span>
+        </div>
+      </div>
+
+      <div class="socials">
+        <a href="https://discord.gg/3fqKR4sv" target="_blank"><i class="fab fa-discord"></i></a>
+  <a href="https://www.tiktok.com/" target="_blank"><i class="fab fa-tiktok"></i></a>
+  <a href="https://www.instagram.com/embenabu1" target="_blank"><i class="fab fa-instagram"></i></a>
+  <a href="https://open.spotify.com/user/31tn4fmowd3hs3ejae3za2rti5qe" target="_blank"><i class="fab fa-spotify"></i></a>
+  <a href="https://www.facebook.com/nasobad1" target="_blank"><i class="fab fa-facebook"></i></a>
+      </div>
+
+      <!-- Khung phát nhạc custom -->
+      <div class="music-player">
+        <div class="music-info">
+          <div class="icon-box"><i class="fas fa-music"></i></div>
+          <div class="song-details">
+            <div class="song-title">𝕃𝕖𝕡𝕤𝕠𝕓𝕒𝕕: 𝕃𝕠𝕧𝕖 𝕚𝕤 𝕒 𝕓𝕒𝕕 𝕥𝕙𝕚𝕟𝕘 ♥</div>
+            <div class="progress-row">
+              <span id="current-time">0:00</span>
+              <input type="range" id="seek-bar" value="0" min="0" max="100">
+              <span id="duration">3:33</span>
+              <button id="prev-btn" disabled><i class="fas fa-backward"></i></button>
+              <button id="play-btn"><i class="fas fa-play"></i></button>
+              <button id="next-btn" disabled><i class="fas fa-forward"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <audio id="bg-music">
+          <source src="nabu12.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const audio = document.getElementById("bg-music");
+    const playBtn = document.getElementById("play-btn");
+    const seekBar = document.getElementById("seek-bar");
+    const currentTimeEl = document.getElementById("current-time");
+    const durationEl = document.getElementById("duration");
+
+    playBtn.addEventListener("click", () => {
+      if (audio.paused) {
+        audio.play();
+        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+      } else {
+        audio.pause();
+        playBtn.innerHTML = '<i class="fas fa-play"></i>';
+      }
+    });
+
+    audio.addEventListener("timeupdate", () => {
+      const currentTime = audio.currentTime;
+      const duration = audio.duration;
+      seekBar.value = (currentTime / duration) * 100;
+
+      let min = Math.floor(currentTime / 60);
+      let sec = Math.floor(currentTime % 60);
+      if (sec < 10) sec = "0" + sec;
+      currentTimeEl.textContent = `${min}:${sec}`;
+
+      let dmin = Math.floor(duration / 60);
+      let dsec = Math.floor(duration % 60);
+      if (dsec < 10) dsec = "0" + dsec;
+      if (!isNaN(dmin)) durationEl.textContent = `${dmin}:${dsec}`;
+    });
+
+    seekBar.addEventListener("input", () => {
+      audio.currentTime = (seekBar.value / 100) * audio.duration;
+    });
+
+    const video = document.getElementById('bg-video');
+    const endTime = 27; 
+    video.addEventListener('timeupdate', () => {
+      if (video.currentTime >= endTime) {
+        video.currentTime = 0;
+        video.play();
+      }
+    });
+
+    const startBtn = document.getElementById('start-btn');
+    const startScreen = document.getElementById('start-screen');
+    const mainContent = document.getElementById('main-content');
+    const music = document.getElementById('bg-music');
+
+    startBtn.addEventListener('click', () => {
+      startScreen.style.display = 'none';
+      mainContent.style.display = 'flex';
+      music.play();
+    });
+  </script>
+</body>
+</html>
