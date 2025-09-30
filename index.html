@@ -188,16 +188,22 @@
     }
 	.username {
   font-size: 36px;
-  margin-top: 18px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #00ffe5;
-  text-transform: uppercase;
-  background: linear-gradient(90deg, #ff5307, #eaf5ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientFlow 5s ease infinite;
+  font-weight: bold;
+  color: #ffffff;
+  position: relative;
+  text-shadow: 2px 0 red, -2px 0 blue;
+  animation: glitch 1s infinite;
 }
+
+@keyframes glitch {
+  0% { text-shadow: 2px 0 red, -2px 0 blue; transform: translate(0,0); }
+  20% { text-shadow: -2px 0 red, 2px 0 blue; transform: translate(1px,1px); }
+  40% { text-shadow: 2px 0 red, -2px 0 blue; transform: translate(-1px,-1px); }
+  60% { text-shadow: -2px 0 red, 2px 0 blue; transform: translate(1px,-1px); }
+  80% { text-shadow: 2px 0 red, -2px 0 blue; transform: translate(-1px,1px); }
+  100% { text-shadow: 2px 0 red, -2px 0 blue; transform: translate(0,0); }
+}
+
 
 .nickname {
   font-size: 20px;
