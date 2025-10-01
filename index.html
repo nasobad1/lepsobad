@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -264,7 +265,7 @@
 </head>
 <body>
   <!-- Video nền -->
-  <video id="bg-video" autoplay loop muted playsinline="true" webkit-playsinline>
+  <video id="bg-video" autoplay loop muted playsinline webkit-playsinline>
     <source src="https://r2.guns.lol/635e5804-79cd-4396-b45a-8d24eeb3f949.mp4" type="video/mp4">
   </video>
 
@@ -326,6 +327,16 @@
 
   <!-- Script -->
   <script>
+  document.addEventListener("DOMContentLoaded", () => {
+  const video = document.getElementById("bg-video");
+  video.muted = true; // để đảm bảo autoplay
+  video.play().catch(() => {
+    // nếu bị chặn thì phát khi user chạm vào màn hình
+    document.body.addEventListener("touchstart", () => {
+      video.play();
+    }, { once: true });
+  });
+});
     const audio = document.getElementById("bg-music");
     const playBtn = document.getElementById("play-btn");
     const seekBar = document.getElementById("seek-bar");
